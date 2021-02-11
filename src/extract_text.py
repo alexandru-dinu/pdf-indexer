@@ -44,11 +44,11 @@ def extract_strings(pdf: str) -> (str, Counter):
     return pdf, Counter(tokens)
 
 
-pdfs = sorted(
-    os.listdir(args.pdf_dir), key=lambda x: os.path.getsize(Path(args.pdf_dir) / x)
-)
+if __name__ == "__main__":
+    pdf_dir = Path(args.pdf_dir)
+    pdfs = sorted(pdf_dir.iterdir(), key=lambda x: os.path.getsize(pdf_dir / x))
 
-with mp.Pool(processes=args.pool_size) as pool:
-    out = pool.map(extract_strings, pdfs)
+    with mp.Pool(processes=args.pool_size) as pool:
+        out = pool.map(extract_strings, pdfs)
 
-pickle.dump(out, open(args.text_path, "wb"))
+    pickle.dump(out, open(args.text_path, "wb"))
