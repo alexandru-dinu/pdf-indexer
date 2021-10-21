@@ -1,38 +1,48 @@
-import readline
+import readline  # noqa
 from argparse import ArgumentParser
+from pathlib import Path
 
 import whoosh
-from whoosh import index
-from whoosh import qparser
-from whoosh import scoring
+from whoosh import index, qparser, scoring
 
-parser = ArgumentParser()
-parser.add_argument("--index_path", type=str, help="Location of the index.")
-parser.add_argument(
-    "--max_results",
-    type=int,
-    default=10,
-    help="Max number of results to show for one query.",
-)
-args = parser.parse_args()
+PROMPT = ">>> "
 
-idx = index.open_dir(args.index_path, indexname="pdfs")
 
-while True:
-    try:
-        term = input("\n>>> ").strip()
+def main():
+    idx = index.open_dir(args.index_path, indexname="pdfs")
 
-        with idx.searcher(weighting=scoring.TF_IDF()) as searcher:
-            query = qparser.QueryParser("content", idx.schema).parse(term)
-            hits = searcher.search(query, limit=args.max_results)
+    while True:
+        try:
+            term = input(f"\n{PROMPT}").strip()
 
-            for i, h in enumerate(hits, start=1):
-                print(f'{i:2d}: {h["title"]}')
+            with idx.searcher(weighting=scoring.TF_IDF()) as searcher:
+                query = qparser.QueryParser("content", idx.schema).parse(term)
+                hits = searcher.search(query, limit=args.max_results)
 
-        print("=" * 80)
+                for i, h in enumerate(hits, start=1):
+                    print(f'{i:2d}: {h["title"]}')
 
-    except whoosh.query.qcore.QueryError as e:
-        print(f"QUERY ERROR: {e}")
+            print("=" * 80)
 
-    except (KeyboardInterrupt, EOFError):
-        break
+        except whoosh.query.qcore.QueryError as e:
+            print(f"QUERY ERROR: {e}")
+
+        except (KeyboardInterrupt, EOFError):
+            break
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--index_path", type=Path, required=True, help="Location of the index."
+    )
+    parser.add_argument(
+        "--max_results",
+        type=int,
+        required=False,
+        default=10,
+        help="Max number of results to show for one query.",
+    )
+    args = parser.parse_args()
+
+    main()

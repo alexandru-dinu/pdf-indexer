@@ -7,21 +7,21 @@ Simple indexer + text searcher for a collection of PDF documents.
 ## Usage
 
 First, extract the words from the PDF documents:
-```bash
-python extract_text.py --pdf_dir <pdf_dir> --text_path <text>.pkl --pool_size <pool_size>
+```sh
+python extract_text.py --pdf_dir PDF_DIR --text_path TEXT_PATH [--pool_size POOL_SIZE]
 ```
 
 Then, construct the index:
-```bash
-python index.py --text_path <text>.pkl --index_path <index_path>
+```sh
+python construct_index.py --text_path TEXT_PATH --index_path INDEX_PATH
 ```
 
 Finally, run the searcher:
-```bash
-python query.py --index_path <index_path> --max_results <max_results>
+```sh
+python query.py --index_path INDEX_PATH [--max_results MAX_RESULTS]
 ```
 
 ## Requirements
 - [`pdfgrep`](https://pdfgrep.org/) binary for text extraction.
-- [`spacy`](https://spacy.io/) for text processing (e.g. tokenization).
-- [`whoosh`](https://whoosh.readthedocs.io/en/latest/index.html) for construcing the index and querying.
+- [`spacy`](https://spacy.io/) for text preprocessing (e.g. tokenization).
+- [`whoosh`](https://whoosh.readthedocs.io/en/latest/index.html) for index construction and querying.
